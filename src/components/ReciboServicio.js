@@ -135,10 +135,13 @@ const ReciboServicio = ({ onBack }) => {
 
     try {
       const numeroRecibo = Date.now();
-      let cliente = null;
-
-      // Solo buscar cliente si está seleccionado
-      if (clienteSeleccionado) {
+      let cliente;
+      if (!clienteSeleccionado) {
+        cliente = {
+          id: 0,
+          nombre: 'Cliente General'
+        };
+      } else {
         cliente = clientes.find(c => c.id === parseInt(clienteSeleccionado));
       }
 
