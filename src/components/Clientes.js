@@ -1,6 +1,6 @@
 // src/components/Clientes.js
 import React, { useState, useEffect } from 'react';
-import { db } from '../db/db';
+import { productosAPI, clientesAPI, serviciosAPI, recibosAPI } from '../db/firebaseOperations.js';
 import './Clientes.css';
 
 const Clientes = ({ onBack }) => {
@@ -21,7 +21,7 @@ const Clientes = ({ onBack }) => {
   const cargarClientes = async () => {
     try {
       setIsLoading(true);
-      const clientesData = await db.clientes.orderBy('fecha_registro').reverse().toArray();
+      const clientesData = await productosAPI.clientes.orderBy('fecha_registro').reverse().toArray();
       setClientes(clientesData);
     } catch (error) {
       console.error('Error al cargar clientes:', error);
@@ -76,7 +76,7 @@ const Clientes = ({ onBack }) => {
     try {
       if (clienteEditando) {
         // Actualizar cliente existente
-        await db.clientes.update(clienteEditando.id, {
+        await productosAPI.clientes.update(clienteEditando.id, {
           nombre: formData.nombre.trim(),
           direccion: formData.direccion.trim(),
           telefono: formData.telefono.trim()
@@ -84,7 +84,7 @@ const Clientes = ({ onBack }) => {
         alert('Cliente actualizado exitosamente');
       } else {
         // Crear nuevo cliente
-        await db.clientes.add({
+        await productosAPI.clientes.agregar({
           nombre: formData.nombre.trim(),
           direccion: formData.direccion.trim(),
           telefono: formData.telefono.trim(),
@@ -104,7 +104,7 @@ const Clientes = ({ onBack }) => {
   const eliminarCliente = async (id) => {
     if (window.confirm('¿Está seguro de eliminar este cliente?')) {
       try {
-        await db.clientes.delete(id);
+        await productosAPI.clientes.delete(id);
         await cargarClientes();
         alert('Cliente eliminado exitosamente');
       } catch (error) {

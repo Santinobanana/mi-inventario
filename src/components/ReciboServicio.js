@@ -1,6 +1,6 @@
 // src/components/ReciboServicio.js
 import React, { useState, useEffect } from 'react';
-import { db } from '../db/db';
+import { productosAPI, clientesAPI, serviciosAPI, recibosAPI } from '../db/firebaseOperations.js';
 import './ReciboServicio.css';
 
 const ReciboServicio = ({ onBack }) => {
@@ -23,9 +23,9 @@ const ReciboServicio = ({ onBack }) => {
   const cargarDatos = async () => {
     try {
       const [clientesData, serviciosData, productosData] = await Promise.all([
-        db.clientes.toArray(),
-        db.servicios.toArray(),
-        db.productos.toArray()
+        productosAPI.clientes.toArray(),
+        productosAPI.servicios.toArray(),
+        productosAPI.productos.toArray()
       ]);
       setClientes(clientesData);
       setServicios(serviciosData);
@@ -159,7 +159,7 @@ const ReciboServicio = ({ onBack }) => {
         fecha: new Date()
       };
 
-      await db.recibos.add(recibo);
+      await productosAPI.recibos.agregar(recibo);
       setReciboGenerado(recibo);
       setMostrarRecibo(true);
 

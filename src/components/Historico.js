@@ -64,7 +64,7 @@ const Historico = ({ onBack, onNavigate }) => {
   const formatearValor = (valor) => {
     return new Intl.NumberFormat('es-ES', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'MXN'
     }).format(valor);
   };
 

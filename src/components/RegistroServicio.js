@@ -1,6 +1,6 @@
 // src/components/RegistroServicio.js
 import React, { useState } from 'react';
-import { db } from '../db/db';
+import { productosAPI, clientesAPI, serviciosAPI, recibosAPI } from '../db/firebaseOperations.js';
 import './RegistroServicio.css';
 
 const RegistroServicio = ({ onBack }) => {
@@ -37,7 +37,7 @@ const RegistroServicio = ({ onBack }) => {
 
     try {
       // Guardar en la base de datos
-      await db.servicios.add({
+      await productosAPI.agregar({
         descripcion: formData.descripcion.trim(),
         valor: valorNumerico,
         fecha_registro: new Date()
