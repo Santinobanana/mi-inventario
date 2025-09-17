@@ -19,8 +19,8 @@ const ReciboProducto = ({ onBack }) => {
   const cargarDatos = async () => {
     try {
       const [clientesData, productosData] = await Promise.all([
-        productosAPI.clientes.toArray(),
-        productosAPI.productos.toArray()
+        clientesAPI.obtenerTodos(),
+        productosAPI.obtenerTodos()
       ]);
       setClientes(clientesData);
       setProductos(productosData);

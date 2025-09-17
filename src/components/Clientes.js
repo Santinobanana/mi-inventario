@@ -21,7 +21,7 @@ const Clientes = ({ onBack }) => {
   const cargarClientes = async () => {
     try {
       setIsLoading(true);
-      const clientesData = await productosAPI.clientes.orderBy('fecha_registro').reverse().toArray();
+      const clientesData = await clientesAPI.obtenerTodos();
       setClientes(clientesData);
     } catch (error) {
       console.error('Error al cargar clientes:', error);
@@ -76,7 +76,7 @@ const Clientes = ({ onBack }) => {
     try {
       if (clienteEditando) {
         // Actualizar cliente existente
-        await productosAPI.clientes.update(clienteEditando.id, {
+        await clientesAPI.actualizar(clienteEditando.id, {
           nombre: formData.nombre.trim(),
           direccion: formData.direccion.trim(),
           telefono: formData.telefono.trim()
@@ -84,7 +84,7 @@ const Clientes = ({ onBack }) => {
         alert('Cliente actualizado exitosamente');
       } else {
         // Crear nuevo cliente
-        await productosAPI.clientes.agregar({
+        await clientesAPI.agregar({
           nombre: formData.nombre.trim(),
           direccion: formData.direccion.trim(),
           telefono: formData.telefono.trim(),
@@ -104,7 +104,7 @@ const Clientes = ({ onBack }) => {
   const eliminarCliente = async (id) => {
     if (window.confirm('¿Está seguro de eliminar este cliente?')) {
       try {
-        await productosAPI.clientes.delete(id);
+        await clientesAPI.eliminar(id);
         await cargarClientes();
         alert('Cliente eliminado exitosamente');
       } catch (error) {
