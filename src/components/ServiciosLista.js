@@ -1,6 +1,6 @@
 // src/components/ServiciosLista.js
 import React, { useState, useEffect } from 'react';
-import { productosAPI, clientesAPI, serviciosAPI, recibosAPI } from '../db/firebaseOperations.js';
+import {serviciosAPI} from '../db/firebaseOperations.js';
 import './ServiciosLista.css';
 
 const ServiciosLista = ({ onBack }) => {
@@ -14,7 +14,7 @@ const ServiciosLista = ({ onBack }) => {
   const cargarServicios = async () => {
     try {
       setIsLoading(true);
-      const serviciosData = await productosAPI.servicios.orderBy('fecha_registro').reverse().toArray();
+      const serviciosData = await serviciosAPI.obtenerTodos();
       setServicios(serviciosData);
     } catch (error) {
       console.error('Error al cargar servicios:', error);
@@ -27,7 +27,7 @@ const ServiciosLista = ({ onBack }) => {
   const eliminarServicio = async (id) => {
     if (window.confirm('¿Está seguro de eliminar este servicio?')) {
       try {
-        await productosAPI.servicios.delete(id);
+        await serviciosAPI.eliminar(id);
         await cargarServicios(); // Recargar la lista
         alert('Servicio eliminado exitosamente');
       } catch (error) {

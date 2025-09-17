@@ -1,6 +1,6 @@
 // src/components/ReciboProducto.js
 import React, { useState, useEffect } from 'react';
-import { productosAPI, clientesAPI, serviciosAPI, recibosAPI } from '../db/firebaseOperations.js';
+import { productosAPI, clientesAPI} from '../db/firebaseOperations.js';
 import './ReciboProducto.css';
 
 const ReciboProducto = ({ onBack }) => {

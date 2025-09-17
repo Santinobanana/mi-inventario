@@ -1,6 +1,5 @@
-// src/components/RegistroServicio.js
 import React, { useState } from 'react';
-import { productosAPI, clientesAPI, serviciosAPI, recibosAPI } from '../db/firebaseOperations.js';
+import {serviciosAPI} from '../db/firebaseOperations.js';
 import './RegistroServicio.css';
 
 const RegistroServicio = ({ onBack }) => {
@@ -20,13 +19,11 @@ const RegistroServicio = ({ onBack }) => {
   };
 
   const handleSubmit = async () => {
-    // Validar que todos los campos estén llenos
     if (!formData.descripcion.trim() || !formData.valor.trim()) {
       alert('Por favor, complete todos los campos');
       return;
     }
 
-    // Validar que el valor sea un número válido
     const valorNumerico = parseFloat(formData.valor);
     if (isNaN(valorNumerico) || valorNumerico < 0) {
       alert('Por favor, ingrese un valor válido');
@@ -36,8 +33,7 @@ const RegistroServicio = ({ onBack }) => {
     setIsLoading(true);
 
     try {
-      // Guardar en la base de datos
-      await productosAPI.agregar({
+      await serviciosAPI.agregar({
         descripcion: formData.descripcion.trim(),
         valor: valorNumerico,
         fecha_registro: new Date()
@@ -45,7 +41,6 @@ const RegistroServicio = ({ onBack }) => {
 
       alert('Servicio guardado exitosamente');
       
-      // Limpiar el formulario
       setFormData({
         descripcion: '',
         valor: ''

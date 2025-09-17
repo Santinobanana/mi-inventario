@@ -1,6 +1,6 @@
 // src/components/Clientes.js
 import React, { useState, useEffect } from 'react';
-import { productosAPI, clientesAPI, serviciosAPI, recibosAPI } from '../db/firebaseOperations.js';
+import {clientesAPI} from '../db/firebaseOperations.js';
 import './Clientes.css';
 
 const Clientes = ({ onBack }) => {

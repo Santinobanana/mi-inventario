@@ -1,6 +1,6 @@
 // src/components/ListaProductos.js
 import React, { useState, useEffect } from 'react';
-import { db } from '../db/db';
+import { productosAPI } from '../db/firebaseOperations';
 import './ListaProductos.css';
 
 const ListaProductos = ({ onBack }) => {
@@ -14,7 +14,7 @@ const ListaProductos = ({ onBack }) => {
   const cargarProductos = async () => {
     try {
       setIsLoading(true);
-      const productosData = await db.productos.orderBy('fecha_registro').reverse().toArray();
+      const productosData = await productosAPI.obtenerTodos();
       setProductos(productosData);
     } catch (error) {
       console.error('Error al cargar productos:', error);
@@ -27,7 +27,7 @@ const ListaProductos = ({ onBack }) => {
   const eliminarProducto = async (id) => {
     if (window.confirm('¿Está seguro de eliminar este producto?')) {
       try {
-        await db.productos.delete(id);
+        await productosAPI.eliminar(id);
         await cargarProductos(); // Recargar la lista
         alert('Producto eliminado exitosamente');
       } catch (error) {

@@ -1,9 +1,8 @@
-// src/components/RegistroProducto.js
 import React, { useState } from 'react';
 import { productosAPI } from '../db/firebaseOperations';
 import './RegistroProducto.css';
 
-function RegistroProducto({ onVolver }) {
+function RegistroProducto({ onBack }) {
   const [formData, setFormData] = useState({
     codigo: '',
     descripcion: '',
@@ -38,7 +37,6 @@ function RegistroProducto({ onVolver }) {
     setMensaje('');
 
     try {
-      // Guardar en Firebase
       await productosAPI.agregar({
         codigo: formData.codigo.trim(),
         descripcion: formData.descripcion.trim(),
@@ -48,14 +46,12 @@ function RegistroProducto({ onVolver }) {
 
       setMensaje('✅ Producto guardado exitosamente');
       
-      // Limpiar formulario
       setFormData({
         codigo: '',
         descripcion: '',
         valor: ''
       });
 
-      // Limpiar mensaje después de 3 segundos
       setTimeout(() => {
         setMensaje('');
       }, 3000);
@@ -70,97 +66,100 @@ function RegistroProducto({ onVolver }) {
 
   return (
     <div className="registro-producto">
-      <div className="header">
-        <button className="btn-volver" onClick={onVolver}>
-          ← Volver
+      <div className="registro-producto-header">
+        <button className="back-button" onClick={onBack}>
+          ←
         </button>
-        <h2>Registro de Producto</h2>
+        <h1>Registro de Producto</h1>
       </div>
 
-      <form onSubmit={handleSubmit} className="formulario">
-        <div className="campo">
-          <label htmlFor="codigo">
-            <span className="icono">📱</span>
-            Código
-          </label>
-          <input
-            type="text"
-            id="codigo"
-            name="codigo"
-            value={formData.codigo}
-            onChange={handleChange}
-            placeholder="Ingresa el código del producto"
-            disabled={loading}
-          />
-        </div>
-
-        <div className="campo">
-          <label htmlFor="descripcion">
-            <span className="icono">📝</span>
-            Descripción
-          </label>
-          <textarea
-            id="descripcion"
-            name="descripcion"
-            value={formData.descripcion}
-            onChange={handleChange}
-            placeholder="Describe el producto"
-            rows="3"
-            disabled={loading}
-          />
-        </div>
-
-        <div className="campo">
-          <label htmlFor="valor">
-            <span className="icono">💰</span>
-            Valor
-          </label>
-          <input
-            type="number"
-            id="valor"
-            name="valor"
-            value={formData.valor}
-            onChange={handleChange}
-            placeholder="0.00"
-            step="0.01"
-            min="0"
-            disabled={loading}
-          />
-        </div>
-
-        {mensaje && (
-          <div className={`mensaje ${mensaje.includes('✅') ? 'exito' : 'error'}`}>
-            {mensaje}
+      <div className="form-container">
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <input
+              type="text"
+              name="codigo"
+              value={formData.codigo}
+              onChange={handleChange}
+              placeholder="📱 Código"
+              className="form-input"
+              disabled={loading}
+            />
+            <div className="qr-icon">📱</div>
           </div>
-        )}
 
-        <button 
-          type="submit" 
-          className="btn-guardar"
-          disabled={loading}
-        >
-          {loading ? (
-            <>
-              <span className="spinner"></span>
-              Guardando...
-            </>
-          ) : (
-            'Guardar Producto'
+          <div className="form-group">
+            <textarea
+              name="descripcion"
+              value={formData.descripcion}
+              onChange={handleChange}
+              placeholder="📝 Descripción"
+              className="form-textarea"
+              disabled={loading}
+            />
+          </div>
+
+          <div className="form-group">
+            <input
+              type="number"
+              name="valor"
+              value={formData.valor}
+              onChange={handleChange}
+              placeholder="💰 Valor"
+              className="form-input"
+              step="0.01"
+              min="0"
+              disabled={loading}
+            />
+          </div>
+
+          {mensaje && (
+            <div className={`mensaje ${mensaje.includes('✅') ? 'exito' : 'error'}`} 
+                 style={{
+                   padding: '12px',
+                   borderRadius: '8px',
+                   marginBottom: '15px',
+                   textAlign: 'center',
+                   backgroundColor: mensaje.includes('✅') ? '#e8f5e8' : '#ffebee',
+                   color: mensaje.includes('✅') ? '#2e7d32' : '#d32f2f',
+                   fontSize: '14px'
+                 }}>
+              {mensaje}
+            </div>
           )}
-        </button>
-      </form>
 
-      {/* Indicador de conexión */}
-      <div className="estado-conexion">
-        <span className={`indicador ${navigator.onLine ? 'online' : 'offline'}`}>
+          <button 
+            type="submit" 
+            className="save-button"
+            disabled={loading}
+          >
+            {loading ? 'Guardando...' : 'Guardar Producto'}
+          </button>
+        </form>
+
+        <div style={{
+          marginTop: '20px',
+          textAlign: 'center',
+          fontSize: '14px',
+          color: '#666'
+        }}>
+          <span style={{
+            display: 'inline-block',
+            width: '8px',
+            height: '8px',
+            borderRadius: '50%',
+            backgroundColor: navigator.onLine ? '#4caf50' : '#f44336',
+            marginRight: '8px'
+          }}></span>
           {navigator.onLine ? '🟢 Online' : '🔴 Offline'}
-        </span>
-        <small>
-          {navigator.onLine 
-            ? 'Los datos se sincronizan automáticamente' 
-            : 'Los datos se guardarán cuando vuelva la conexión'
-          }
-        </small>
+          <br />
+          <small style={{ fontSize: '12px', color: '#999' }}>
+            {navigator.onLine 
+              ? 'Los datos se sincronizan automáticamente' 
+              : 'Los datos se guardarán cuando vuelva la conexión'
+            }
+          </small>
+        </div>
       </div>
     </div>
   );
