@@ -108,7 +108,7 @@ const ReciboProducto = ({ onBack }) => {
         fecha: new Date()
       };
 
-      await productosAPI.recibos.add(recibo);
+      await productosAPI.agregar(recibo);
       setReciboGenerado(recibo);
       setMostrarRecibo(true);
 

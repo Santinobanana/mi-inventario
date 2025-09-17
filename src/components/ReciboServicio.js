@@ -1,6 +1,6 @@
 // src/components/ReciboServicio.js
 import React, { useState, useEffect } from 'react';
-import { productosAPI, clientesAPI, serviciosAPI} from '../db/firebaseOperations.js';
+import { productosAPI, clientesAPI, serviciosAPI, recibosAPI} from '../db/firebaseOperations.js';
 import './ReciboServicio.css';
 
 const ReciboServicio = ({ onBack }) => {
@@ -159,7 +159,7 @@ const ReciboServicio = ({ onBack }) => {
         fecha: new Date()
       };
 
-      await productosAPI.recibos.agregar(recibo);
+      await recibosAPI.agregar(recibo);
       setReciboGenerado(recibo);
       setMostrarRecibo(true);
 
