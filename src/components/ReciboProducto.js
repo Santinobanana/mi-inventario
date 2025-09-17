@@ -8,7 +8,6 @@ const ReciboProducto = ({ onBack }) => {
   const [productos, setProductos] = useState([]);
   const [clienteSeleccionado, setClienteSeleccionado] = useState('');
   const [productosSeleccionados, setProductosSeleccionados] = useState([]);
-  const [direccionEntrega, setDireccionEntrega] = useState('');
   const [descuento, setDescuento] = useState(0);
   const [mostrarRecibo, setMostrarRecibo] = useState(false);
   const [reciboGenerado, setReciboGenerado] = useState(null);
@@ -29,6 +28,10 @@ const ReciboProducto = ({ onBack }) => {
       console.error('Error al cargar datos:', error);
       alert('Error al cargar los datos');
     }
+  };
+
+  const handleClienteChange = (clienteId) => {
+    setClienteSeleccionado(clienteId);
   };
 
   const agregarProducto = (producto) => {
@@ -74,18 +77,23 @@ const ReciboProducto = ({ onBack }) => {
   };
 
   const generarRecibo = async () => {
-    if (!clienteSeleccionado) {
-      alert('Seleccione un cliente');
-      return;
-    }
-
     if (productosSeleccionados.length === 0) {
       alert('Agregue al menos un producto');
       return;
     }
 
+    // Si no hay cliente seleccionado, crear uno genérico
+    let cliente;
+    if (!clienteSeleccionado) {
+      cliente = {
+        id: 0,
+        nombre: 'Cliente General'
+      };
+    } else {
+      cliente = clientes.find(c => c.id === parseInt(clienteSeleccionado));
+    }
+
     try {
-      const cliente = clientes.find(c => c.id === parseInt(clienteSeleccionado));
       const numeroRecibo = Date.now();
 
       const recibo = {
@@ -94,7 +102,6 @@ const ReciboProducto = ({ onBack }) => {
         cliente: cliente,
         tipo: 'producto',
         items: productosSeleccionados,
-        direccion_entrega: direccionEntrega,
         subtotal: calcularSubtotal(),
         descuento: descuento,
         total: calcularTotal(),
@@ -114,10 +121,91 @@ const ReciboProducto = ({ onBack }) => {
   const limpiarFormulario = () => {
     setClienteSeleccionado('');
     setProductosSeleccionados([]);
-    setDireccionEntrega('');
     setDescuento(0);
     setMostrarRecibo(false);
     setReciboGenerado(null);
+  };
+
+  const imprimirRecibo = () => {
+    const ventanaImpresion = window.open('', '_blank');
+    const reciboHTML = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Recibo N° ${reciboGenerado.numero}</title>
+        <style>
+          body { 
+            font-family: 'Courier New', monospace; 
+            font-size: 12px; 
+            margin: 0; 
+            padding: 20px;
+            width: 58mm;
+          }
+          .centro { text-align: center; }
+          .negrita { font-weight: bold; }
+          .empresa { margin-bottom: 10px; }
+          .linea { border-bottom: 1px dashed #000; margin: 10px 0; }
+          .item { margin: 2px 0; }
+          .total { border-top: 2px solid #000; padding-top: 5px; }
+          .espaciado { margin: 15px 0; }
+          @media print {
+            body { margin: 0; }
+            @page { margin: 0; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="centro empresa">
+          <div class="negrita">LAVANDERIA SAN MIGUEL</div>
+          <div>Chiapas 1651 colonia San Miguel de Mezquitan</div>
+          <div>Tel: 3320164725</div>
+        </div>
+        
+        <div class="linea"></div>
+        
+        <div>
+          <div class="negrita">RECIBO N° ${reciboGenerado.numero}</div>
+          <div>Cliente: ${reciboGenerado.cliente.nombre}</div>
+          <div>Fecha: ${new Date(reciboGenerado.fecha).toLocaleString('es-ES')}</div>
+          <div>Modalidad: Recoger en tienda</div>
+        </div>
+        
+        <div class="linea"></div>
+        
+        <div>
+          ${reciboGenerado.items.map(item => `
+            <div class="item">
+              ${item.codigo} - ${item.descripcion}
+              <br>
+              ${item.cantidad} x $${item.valor.toFixed(2)} = $${(item.cantidad * item.valor).toFixed(2)}
+            </div>
+          `).join('')}
+        </div>
+        
+        <div class="linea"></div>
+        
+        <div>
+          <div>Subtotal: $${reciboGenerado.subtotal.toFixed(2)}</div>
+          ${reciboGenerado.descuento > 0 ? 
+            `<div>Descuento (${reciboGenerado.descuento}%): -$${((reciboGenerado.subtotal * reciboGenerado.descuento) / 100).toFixed(2)}</div>` : ''}
+          <div class="total negrita">TOTAL: $${reciboGenerado.total.toFixed(2)}</div>
+        </div>
+        
+        <div class="espaciado centro">
+          <div>¡Gracias por su preferencia!</div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    ventanaImpresion.document.write(reciboHTML);
+    ventanaImpresion.document.close();
+    ventanaImpresion.focus();
+    
+    setTimeout(() => {
+      ventanaImpresion.print();
+      ventanaImpresion.close();
+    }, 250);
   };
 
   const formatearValor = (valor) => {
@@ -137,7 +225,9 @@ const ReciboProducto = ({ onBack }) => {
             </button>
             <h1>Recibo del producto</h1>
             <div className="recibo-actions">
-              <button className="share-button">📤</button>
+              <button className="print-button" onClick={imprimirRecibo} title="Imprimir recibo">
+                🖨️
+              </button>
               <button className="delete-button">🗑️</button>
             </div>
           </div>
@@ -152,7 +242,7 @@ const ReciboProducto = ({ onBack }) => {
             <div className="recibo-details">
               <p><strong>N° {reciboGenerado.numero}</strong></p>
               <p><strong>Cliente:</strong> {reciboGenerado.cliente.nombre}</p>
-              <p><strong>Dirección de entrega:</strong> {direccionEntrega || 'No especificada'}</p>
+              <p><strong>Modalidad:</strong> Recoger en tienda</p>
             </div>
 
             <div className="recibo-section">
@@ -204,7 +294,7 @@ const ReciboProducto = ({ onBack }) => {
           <label>Cliente:</label>
           <select
             value={clienteSeleccionado}
-            onChange={(e) => setClienteSeleccionado(e.target.value)}
+            onChange={(e) => handleClienteChange(e.target.value)}
             className="form-select"
           >
             <option value="">Seleccionar cliente</option>
@@ -214,18 +304,6 @@ const ReciboProducto = ({ onBack }) => {
               </option>
             ))}
           </select>
-        </div>
-
-        {/* Dirección de entrega */}
-        <div className="form-group">
-          <label>Dirección de entrega:</label>
-          <input
-            type="text"
-            value={direccionEntrega}
-            onChange={(e) => setDireccionEntrega(e.target.value)}
-            placeholder="Dirección de entrega"
-            className="form-input"
-          />
         </div>
 
         {/* Selección de productos */}
