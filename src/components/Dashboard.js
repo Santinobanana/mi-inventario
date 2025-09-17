@@ -45,7 +45,7 @@ const Dashboard = ({ onNavigate }) => {
   return (
     <div className="dashboard">
       <div className="dashboard-header">
-        <h1>Opciones</h1>
+        <h1>Administrador de negocios</h1>
       </div>
       
       <div className="menu-items">

@@ -15,18 +15,4 @@ db.version(1).stores({
 // Función para inicializar datos de ejemplo (opcional)
 export const inicializarDatos = async () => {
   const countProductos = await db.productos.count();
-  
-  if (countProductos === 0) {
-    // Agregar algunos productos de ejemplo
-    await db.productos.bulkAdd([
-      {
-        codigo: 'PROD001',
-        descripcion: 'Producto de ejemplo',
-        valor: 100.00,
-        fecha_registro: new Date()
-      }
-    ]);
-    
-    console.log('Datos de ejemplo agregados');
-  }
 };

@@ -1,6 +1,7 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Mi Inventario",
+  "name": "Sistema de Inventario - Gestión de Productos y Servicios",
+  "description": "Aplicación para gestionar inventario, clientes y generar recibos",
   "icons": [
     {
       "src": "favicon.ico",
@@ -10,16 +11,45 @@
     {
       "src": "logo192.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any maskable"
     },
     {
       "src": "logo512.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any maskable"
     }
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#20b2aa",
+  "background_color": "#ffffff",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "es",
+  "categories": ["business", "productivity", "utilities"],
+  "shortcuts": [
+    {
+      "name": "Nuevo Producto",
+      "short_name": "Producto",
+      "description": "Registrar nuevo producto",
+      "url": "/registros/producto",
+      "icons": [{"src": "logo192.png", "sizes": "192x192"}]
+    },
+    {
+      "name": "Nuevo Cliente",
+      "short_name": "Cliente", 
+      "description": "Agregar nuevo cliente",
+      "url": "/clientes",
+      "icons": [{"src": "logo192.png", "sizes": "192x192"}]
+    },
+    {
+      "name": "Generar Recibo",
+      "short_name": "Recibo",
+      "description": "Crear nuevo recibo",
+      "url": "/recibo",
+      "icons": [{"src": "logo192.png", "sizes": "192x192"}]
+    }
+  ]
 }

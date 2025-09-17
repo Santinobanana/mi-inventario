@@ -1,43 +1,119 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Web site created using create-react-app"
-    />
+    <meta name="theme-color" content="#20b2aa" />
+    <meta name="description" content="Sistema de inventario para gestión de productos, servicios y clientes" />
+    
+    <!-- PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Mi Inventario">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="msapplication-TileColor" content="#20b2aa">
+    <meta name="msapplication-tap-highlight" content="no">
+    
+    <!-- Icons -->
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
-
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
-    <title>React App</title>
+    
+    <title>Mi Inventario - Sistema de Gestión</title>
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <noscript>Necesitas habilitar JavaScript para ejecutar esta aplicación.</noscript>
     <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('SW registrado correctamente: ', registration);
+              
+              // Verificar actualizaciones
+              registration.addEventListener('updatefound', () => {
+                const newWorker = registration.installing;
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    // Nueva versión disponible
+                    console.log('Nueva versión disponible');
+                    if (confirm('Nueva versión disponible. ¿Actualizar ahora?')) {
+                      newWorker.postMessage({ type: 'SKIP_WAITING' });
+                      window.location.reload();
+                    }
+                  }
+                });
+              });
+            })
+            .catch((error) => {
+              console.log('Error al registrar SW: ', error);
+            });
+        });
 
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
+        // Escuchar cambios en el Service Worker
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          window.location.reload();
+        });
+      }
 
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
+      // Detectar instalación de PWA
+      let deferredPrompt;
+      window.addEventListener('beforeinstallprompt', (e) => {
+        console.log('PWA puede ser instalada');
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        // Mostrar botón de instalación personalizado
+        showInstallPromotion();
+      });
+
+      function showInstallPromotion() {
+        // Crear botón de instalación
+        const installButton = document.createElement('button');
+        installButton.textContent = '📱 Instalar App';
+        installButton.style.cssText = `
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          background: #20b2aa;
+          color: white;
+          border: none;
+          padding: 12px 20px;
+          border-radius: 25px;
+          font-size: 14px;
+          cursor: pointer;
+          box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+          z-index: 1000;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        `;
+        
+        installButton.addEventListener('click', async () => {
+          if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log('Resultado instalación:', outcome);
+            deferredPrompt = null;
+            installButton.remove();
+          }
+        });
+        
+        document.body.appendChild(installButton);
+        
+        // Remover después de 10 segundos si no se usa
+        setTimeout(() => {
+          if (installButton.parentNode) {
+            installButton.remove();
+          }
+        }, 10000);
+      }
+
+      // Detectar cuando la app se instala
+      window.addEventListener('appinstalled', (evt) => {
+        console.log('PWA instalada correctamente');
+      });
+    </script>
   </body>
 </html>
