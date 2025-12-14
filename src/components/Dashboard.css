@@ -123,3 +123,62 @@
 .add-button:active {
   background-color: #178780;
 }
+
+.printer-connection-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background-color: white;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.status-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.status-indicator {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.status-indicator.connected {
+  color: #2e7d32;
+  background-color: #e8f5e8;
+}
+
+.status-indicator.disconnected {
+  color: #d32f2f;
+  background-color: #ffebee;
+}
+
+.connection-button {
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.connect-btn {
+  background-color: #20b2aa;
+  color: white;
+}
+
+.connect-btn:hover {
+  background-color: #1a9d96;
+}
+
+.disconnect-btn {
+  background-color: #f44336;
+  color: white;
+}
+
+.disconnect-btn:hover {
+  background-color: #d32f2f;
+}

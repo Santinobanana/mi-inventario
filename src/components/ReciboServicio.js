@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { productosAPI, clientesAPI, serviciosAPI, recibosAPI} from '../db/firebaseOperations.js';
 import './ReciboServicio.css';
 
-const ReciboServicio = ({ onBack }) => {
+const ReciboServicio = ({ onBack,onPrint }) => {
   const [clientes, setClientes] = useState([]);
   const [servicios, setServicios] = useState([]);
   const [productos, setProductos] = useState([]);
@@ -181,6 +181,14 @@ const ReciboServicio = ({ onBack }) => {
   };
 
   const imprimirRecibo = () => {
+    const useThermalPrint = window.confirm("¿Desea imprimir el recibo directamente a la impresora térmica (recomendado para recibos)?\n\nPresione CANCELAR para usar la impresión del navegador (impresión en papel normal/PDF).");
+
+    if (useThermalPrint) {
+        // 2. Usar el handler de Web Bluetooth
+        onPrint(reciboGenerado);
+        return;
+    }
+
     const ventanaImpresion = window.open('', '_blank');
     const reciboHTML = `
       <!DOCTYPE html>

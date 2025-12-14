@@ -14,25 +14,70 @@ import ReciboServicio from './components/ReciboServicio';
 import Historico from './components/Historico';
 import GestionStock from './components/GestionStock';
 import { db, inicializarDatos } from './db/db';
+import PrinterService from './services/PrinterService'; // Importar el servicio
 import './App.css';
 
 function App() {
   const [currentView, setCurrentView] = useState('dashboard');
+  const [printerConnected, setPrinterConnected] = useState(PrinterService.isConnected);
 
   useEffect(() => {
     // Inicializar la base de datos cuando se carga la app
     inicializarDatos();
+
+    setPrinterConnected(PrinterService.isDeviceConnected());
   }, []);
 
   const handleNavigate = (view) => {
-    setCurrentView(view);
-    console.log('Navegando a:', view);
+      setCurrentView(view);
+      console.log('Navegando a:', view);
+    };
+  
+  // HANDLERS DE IMPRESORA
+  const handleConnectPrinter = async () => {
+      try {
+          await PrinterService.connect();
+          setPrinterConnected(true);
+          alert('Impresora conectada exitosamente.');
+      } catch (error) {
+          console.error("Error al conectar impresora:", error);
+          alert(`Error al conectar impresora: ${error.message}. Asegúrese de que su impresora esté encendida y visible.`);
+          setPrinterConnected(false);
+      }
+  };
+  
+  const handleDisconnectPrinter = () => {
+      PrinterService.disconnect();
+      setPrinterConnected(false);
+      alert('Impresora desconectada.');
+  };
+  
+  const handlePrintRecibo = async (recibo) => {
+    try {
+        if (!PrinterService.isDeviceConnected()) {
+             alert('La impresora no está conectada. Conéctela desde el Dashboard.');
+             return;
+        }
+        
+        // Llamar al método del servicio para imprimir
+        await PrinterService.printRecibo(recibo);
+        alert('✅ Recibo enviado a la impresora.');
+        
+    } catch (error) {
+        console.error('Error al imprimir:', error);
+        alert(`❌ Error al imprimir el recibo: ${error.message}.`);
+    }
   };
 
   const renderCurrentView = () => {
     switch(currentView) {
       case 'dashboard':
-        return <Dashboard onNavigate={handleNavigate} />;
+        return (<Dashboard 
+          onNavigate={handleNavigate} 
+          printerConnected={printerConnected} // PASAR ESTADO
+          connectPrinter={handleConnectPrinter} // PASAR FUNCIÓN
+          disconnectPrinter={handleDisconnectPrinter} // PASAR FUNCIÓN /
+          />);
       
       case 'registros':
         return (
@@ -97,6 +142,7 @@ function App() {
         return (
           <ReciboProducto 
             onBack={() => setCurrentView('recibo')}
+            onPrint={handlePrintRecibo} // PASAR HANDLER DE IMPRESIÓN
           />
         );
       
@@ -104,6 +150,7 @@ function App() {
         return (
           <ReciboServicio 
             onBack={() => setCurrentView('recibo')}
+            onPrint={handlePrintRecibo} // PASAR HANDLER DE IMPRESIÓN
           />
         );
       

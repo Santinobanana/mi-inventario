@@ -1,9 +1,9 @@
 // src/components/ReciboProducto.js
 import React, { useState, useEffect } from 'react';
-import { productosAPI, clientesAPI} from '../db/firebaseOperations.js';
+import { productosAPI, clientesAPI, recibosAPI} from '../db/firebaseOperations.js';
 import './ReciboProducto.css';
 
-const ReciboProducto = ({ onBack }) => {
+const ReciboProducto = ({ onBack, onPrint }) => {
   const [clientes, setClientes] = useState([]);
   const [productos, setProductos] = useState([]);
   const [clienteSeleccionado, setClienteSeleccionado] = useState('');
@@ -90,7 +90,7 @@ const ReciboProducto = ({ onBack }) => {
         nombre: 'Cliente General'
       };
     } else {
-      cliente = clientes.find(c => c.id === parseInt(clienteSeleccionado));
+      cliente = clientes.find(c => c.id === clienteSeleccionado);
     }
 
     try {
@@ -108,7 +108,8 @@ const ReciboProducto = ({ onBack }) => {
         fecha: new Date()
       };
 
-      await productosAPI.agregar(recibo);
+      // CORRECCIÓN: Usar recibosAPI para guardar recibos
+      await recibosAPI.agregar(recibo);
       setReciboGenerado(recibo);
       setMostrarRecibo(true);
 
@@ -127,6 +128,13 @@ const ReciboProducto = ({ onBack }) => {
   };
 
   const imprimirRecibo = () => {
+    const useThermalPrint = window.confirm("¿Desea imprimir el recibo directamente a la impresora térmica (recomendado para recibos)?\n\nPresione CANCELAR para usar la impresión del navegador (impresión en papel normal/PDF).");
+    if (useThermalPrint) {
+        // 2. Usar el handler de Web Bluetooth
+        onPrint(reciboGenerado);
+        return;
+    }
+    
     const ventanaImpresion = window.open('', '_blank');
     const reciboHTML = `
       <!DOCTYPE html>

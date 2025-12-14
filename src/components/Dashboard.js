@@ -2,7 +2,7 @@
 import React from 'react';
 import './Dashboard.css';
 
-const Dashboard = ({ onNavigate }) => {
+const Dashboard = ({ onNavigate, printerConnected, connectPrinter, disconnectPrinter }) => {  
   const menuItems = [
     {
       id: 'recibo',
@@ -42,12 +42,27 @@ const Dashboard = ({ onNavigate }) => {
     }
   ];
 
-  return (
+return (
     <div className="dashboard">
       <div className="dashboard-header">
         <h1>Administrador de negocios</h1>
       </div>
       
+      {/* NUEVA SECCIÓN DE CONEXIÓN DE IMPRESORA */}
+      <div className="printer-connection-status">
+        <span className="status-label">Conexión Impresora:</span>
+        <span className={`status-indicator ${printerConnected ? 'connected' : 'disconnected'}`}>
+          {printerConnected ? '🟢 Conectada' : '🔴 Desconectada'}
+        </span>
+        <button
+          className={`connection-button ${printerConnected ? 'disconnect-btn' : 'connect-btn'}`}
+          onClick={printerConnected ? disconnectPrinter : connectPrinter}
+        >
+          {printerConnected ? 'Desconectar' : 'Conectar'}
+        </button>
+      </div>
+      {/* FIN NUEVA SECCIÓN */}
+
       <div className="menu-items">
         {menuItems.map((item) => (
           <div 
@@ -67,5 +82,4 @@ const Dashboard = ({ onNavigate }) => {
     </div>
   );
 };
-
 export default Dashboard;
